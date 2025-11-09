@@ -2,7 +2,12 @@
 FROM registry.access.redhat.com/ubi8/openjdk-17:1.18 AS build
 WORKDIR /usr/src/app
 COPY . .
-RUN ./mvnw package -DskipTests -Dquarkus.package.type=fast-jar
+
+# instala o Maven na imagem base
+RUN microdnf install -y maven
+
+# compila o projeto
+RUN mvn package -DskipTests -Dquarkus.package.type=fast-jar
 
 # Etapa 2 - Imagem final de execução
 FROM registry.access.redhat.com/ubi8/openjdk-17:1.18
