@@ -1,23 +1,30 @@
-# Etapa 1 - Build do projeto com Maven Wrapper
-FROM maven:3.9.9-eclipse-temurin-17 AS build
+# Etapa de build
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 WORKDIR /app
-COPY . .
 
-# Dá permissão de execução ao mvnw (caso não tenha)
+# Copia os arquivos essenciais do Maven
+COPY pom.xml mvnw ./
+COPY .mvn .mvn
+
+# Dá permissão de execução ao Maven Wrapper
 RUN chmod +x mvnw
 
-# Compila o projeto Quarkus em modo fast-jar (gera target/quarkus-app)
-RUN ./mvnw package -DskipTests -Dquarkus.package.type=fast-jar
+# Copia o restante do código-fonte
+COPY src src
 
-# Etapa 2 - Imagem final apenas com o resultado da build
-FROM eclipse-temurin:17
+# Compila o projeto (gera o target)
+RUN ./mvnw clean package -DskipTests
 
-WORKDIR /deployments
-COPY --from=build /app/target/quarkus-app/lib/ /deployments/lib/
-COPY --from=build /app/target/quarkus-app/*.jar /deployments/
-COPY --from=build /app/target/quarkus-app/app/ /deployments/app/
-COPY --from=build /app/target/quarkus-app/quarkus/ /deployments/quarkus/
+# Etapa de execução
+FROM eclipse-temurin:17-jdk-jammy
+
+WORKDIR /app
+
+# Copia o jar compilado da etapa anterior
+COPY --from=build /app/target/*-runner.jar app.jar
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/deployments/quarkus-run.jar"]
+
+# Comando para rodar a aplicação
+ENTRYPOINT ["java", "-jar", "app.jar"]
