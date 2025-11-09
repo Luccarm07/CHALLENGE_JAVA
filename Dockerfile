@@ -1,20 +1,15 @@
-# Etapa 1 - Build do projeto com Maven
-FROM registry.access.redhat.com/ubi8/openjdk-17:1.18 AS build
-WORKDIR /usr/src/app
-COPY . .
-
-# instala o Maven na imagem base
-RUN microdnf install -y maven
-
-# compila o projeto
-RUN mvn package -DskipTests -Dquarkus.package.type=fast-jar
-
-# Etapa 2 - Imagem final de execução
-FROM registry.access.redhat.com/ubi8/openjdk-17:1.18
-WORKDIR /deployments
-COPY --from=build /usr/src/app/target/quarkus-app/lib/ /deployments/lib/
-COPY --from=build /usr/src/app/target/quarkus-app/*.jar /deployments/
-COPY --from=build /usr/src/app/target/quarkus-app/app/ /deployments/app/
-COPY --from=build /usr/src/app/target/quarkus-app/quarkus/ /deployments/quarkus/
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/deployments/quarkus-run.jar"]
+#9 0.092 error: Failed to create: /var/cache/yum/metadata
+#9 ERROR: process "/bin/sh -c microdnf install -y maven" did not complete successfully: exit code: 1
+------
+ > [build 4/5] RUN microdnf install -y maven:
+0.092 error: Failed to create: /var/cache/yum/metadata
+------
+Dockerfile:7
+--------------------
+   5 |
+   6 |     # instala o Maven na imagem base
+   7 | >>> RUN microdnf install -y maven
+   8 |
+   9 |     # compila o projeto
+--------------------
+error: failed to solve: process "/bin/sh -c microdnf install -y maven" did not complete successfully: exit code: 1
