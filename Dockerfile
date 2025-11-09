@@ -20,4 +20,4 @@ RUN ./mvnw clean package -DskipTests
 EXPOSE 8080
 
 # Comando final de execução: o caminho está ajustado para o WORKDIR
-CMD ["java", "-jar", "quarkus-app/quarkus-run.jar"]
+CMD ["java", "-jar", "target/quarkus-app/quarkus-run.jar"]
