@@ -1,5 +1,12 @@
-*
-!target/*-runner
-!target/*-runner.jar
-!target/lib/*
-!target/quarkus-app/*
+# Exclui o diretório de build do Maven, que será criado dentro do container
+target/
+
+# Exclui arquivos de IDEs
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Exclui arquivos temporários ou de sistema
+.DS_Store
